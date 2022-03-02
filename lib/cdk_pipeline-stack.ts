@@ -3,6 +3,8 @@ import { BuildSpec, LinuxBuildImage, PipelineProject } from 'aws-cdk-lib/aws-cod
 import { Artifact, Pipeline } from 'aws-cdk-lib/aws-codepipeline';
 import { CloudFormationCreateUpdateStackAction, CodeBuildAction, GitHubSourceAction } from 'aws-cdk-lib/aws-codepipeline-actions';
 import { Construct } from 'constructs';
+import * as iam from 'aws-cdk-lib/aws-iam';
+
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
 
 export class CdkPipelineStack extends Stack {
@@ -61,5 +63,13 @@ export class CdkPipelineStack extends Stack {
         })
       ]
     });
+
+    const readRole = new iam.Role(this, 'ReadRole', {
+      assumedBy: new iam.AccountPrincipal('467796444876'),
+      roleName: 'cdk-readOnlyRole'
+    });
+    // Attach the ReadOnlyAccess policy to this role. You could use a more restrictive policy
+    // if you only wanted read access to specific resources
+    readRole.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('ReadOnlyAccess'));
   }
 }
